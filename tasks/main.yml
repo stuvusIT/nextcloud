@@ -1,0 +1,29 @@
+---
+- name: Update repositories cache and install needed php packages
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+  when: ansible_pkg_mgr == "apt"
+  with_items:
+    - php-gd
+    - php-zip
+    - php-curl
+    - php-mbstring
+- name: Run only if it hasn't been done already
+  stat: path={{nextcloud_path}}
+  register: st
+
+- name: download file from a file path
+  get_url:
+    url: https://download.nextcloud.com/server/releases/nextcloud-11.0.3.tar.bz2
+    dest: /tmp/nextcloud.tar.bz2
+  when: not st.stat.exists
+
+- unarchive:
+    src: /tmp/nextcloud.tar.bz2
+    dest: /var/www
+    remote_src: True
+    owner: www-data:www-data
+  when: not st.stat.exists
+
+- name: run 
