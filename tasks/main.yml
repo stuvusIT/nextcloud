@@ -9,50 +9,11 @@
     - php-zip
     - php-curl
     - php-mbstring
+    - php-ldap
 - name: Run only if it hasn't been done already
   stat: path={{nextcloud_path}}
   register: st
 
-- name: download file from a file path
-  get_url:
-    url: https://download.nextcloud.com/server/releases/nextcloud-11.0.3.tar.bz2
-    dest: /tmp/nextcloud.tar.bz2
-  when: not st.stat.exists
+- include: install.yml
+  when:  not st.stat.exists
 
-- name: Create root
-  file: 
-    path: "{{nextcloud_path}}"
-    state: directory 
-    mode: 0755
-    owner: www-data
-  when: not st.stat.exists
-
-- unarchive:
-    src: /tmp/nextcloud.tar.bz2
-    dest: /var/www
-    remote_src: True
-    owner: www-data
-    group: www-data
-  when: not st.stat.exists
-
-- name: Create a new database with name '{{ nextcloud_mysql_database_name }}'
-  mysql_db:
-    name: "{{ nextcloud_mysql_database_name }}"
-    state: present
-
-- name: Create mariadb user
-  mysql_user:
-    name: "{{ nextcloud_mysql_user }}"
-    password: "{{ nextcloud_mysql_password }}"
-    priv: '{{ nextcloud_mysql_database_name }}.*:ALL,GRANT'
-    state: present
-
-- name: Run the nextcloud installer from command line using sudo since become is shitty
-  shell: sudo -u www-data php occ  maintenance:install --database "mysql" --database-name "{{nextcloud_mysql_database_name}}"  --database-user "{{nextcloud_mysql_user}}" --database-pass "{{nextcloud_mysql_password}}" --admin-user "{{ nextcloud_user }}" --admin-pass "{{ nextcloud_password }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Run the nextcloud installer from command line using sudo since become is shitty
-  shell: sudo -u www-data php occ config:system:set trusted_domains 2 --value=nextcloud.stuvus.de"
-  args:
-    chdir: "{{ nextcloud_path }}"
