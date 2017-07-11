@@ -10,6 +10,10 @@
     - php-curl
     - php-mbstring
     - php-ldap
+    - python-mysqldb
+    - php-mysql
+    - php-xml
+
 - name: Run only if it hasn't been done already
   stat: path={{nextcloud_path}}
   register: st
