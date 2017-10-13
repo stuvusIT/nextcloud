@@ -1,0 +1,23 @@
+---
+- name: Update repositories cache and install needed php packages
+  apt:
+    name: "{{item}}"
+    update_cache: yes
+  when: ansible_pkg_mgr == "apt"
+  with_items:
+    - php-gd
+    - php-zip
+    - php-curl
+    - php-mbstring
+    - php-ldap
+    - python-mysqldb
+    - php-mysql
+    - php-xml
+
+- name: Run only if it hasn't been done already
+  stat: path={{nextcloud_path}}
+  register: st
+
+- include: install.yml
+  when:  not st.stat.exists
+
