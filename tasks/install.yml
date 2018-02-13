@@ -1,8 +1,10 @@
 ---
-- name: download file from a file path
+- name: Download latest version
   get_url:
-    url: https://download.nextcloud.com/server/releases/nextcloud-11.0.3.tar.bz2
-    dest: /tmp/nextcloud.tar.bz2
+    url: "https://download.nextcloud.com/server/releases/nextcloud-{{ nextcloud_version }}.tar.bz2"
+    dest: "{{ global_cache_dir | mandatory }}/"
+  become: false
+  delegate_to: localhost
 
 - name: Create root
   file: 
@@ -11,12 +13,14 @@
     mode: 0755
     owner: www-data
 
-- unarchive:
-    src: /tmp/nextcloud.tar.bz2
-    dest: /var/www
+- name: Extract nextcloud into install path
+  unarchive:
+    src: "{{ global_cache_dir }}/nextcloud-{{ nextcloud_version }}.tar.bz2"
+    dest: "{{ nextcloud_path }}/"
     remote_src: True
     owner: www-data
     group: www-data
+  creates: "{{ mattermost_mattermail_install_path }}/mattermail"
 
 - name: Create a new database with name '{{ nextcloud_mysql_database_name }}'
   mysql_db:
@@ -36,116 +40,10 @@
     chdir: "{{ nextcloud_path }}"
 
 - name: Add the domain to the trusted domains
-  shell: sudo -u www-data php occ config:system:set trusted_domains 2 --value=nextcloud.stuvus.de
+  shell: "sudo -u www-data php occ config:system:set trusted_domains {{ item.0 }} --value={{ item.1 }}"
+  with_indexed_items: "{{ nextcloud_trusted_domains }}"
   args:
     chdir: "{{ nextcloud_path }}"
 
-- name: Enable the ldap plugin from command line using sudo since become is shitty
-  shell: sudo -u www-data php occ app:enable user_ldap
-  args:
-    chdir: "{{ nextcloud_path }}"
+- import_tasks: ldap.yml
 
-- name: Create empty ldap config
-  shell: sudo -u www-data php occ ldap:create-empty-config
-  args:
-    chdir: "{{ nextcloud_path }}"
-  register: config_id_output
-
-- set_fact:
-    config_id: "{{ config_id_output['stdout'].split(' ') | last}}"
-
-- name: Set ldapAgentName
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapAgentName {{ldapAgentName}}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapAgentPassword
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapAgentPassword {{ldapAgentPassword}}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapBase
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapBase {{ldapBase}}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapBaseGroups
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapBaseGroups {{ldapBaseGroups}}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapBaseUsers
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapBaseUsers '{{ldapBaseUsers}}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapConfigurationActive  
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapConfigurationActive 1"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapGroupFilter 
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapGroupFilter '{{ ldapGroupFilter }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: ldapGroupFilterObjectclass
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapGroupFilterObjectclass {{ ldapGroupFilterObjectclass }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapGroupMemberAssocAttr 
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapGroupMemberAssocAttr {{ ldapGroupMemberAssocAttr }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapHost 
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapHost {{ ldapHost }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapLoginFilter
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapLoginFilter '{{ ldapLoginFilter }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapUserDisplayName
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapUserDisplayName {{ ldapUserDisplayName }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapUserFilter
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapUserFilter '{{ ldapUserFilter }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapUserFilterObjectclass
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapUserFilterObjectclass '{{ ldapUserFilterObjectclass }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldaphasMemberOfFilterSupport
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} hasMemberOfFilterSupport   '{{ ldaphasMemberOfFilterSupport }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapPort
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapPort {{ ldapPort }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapEmailAttribute
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapEmailAttribute {{ ldapEmailAttribute }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-
-- name: Test ldap plugin config
-  shell: "sudo -u www-data php occ ldap:test-config {{ config_id }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-  register: valid_config
-
-- fail:
-    msg: "The configuration is invalid. Please have a look at the logs for further details."
-  when: valid_config['stdout'] != "The configuration is valid and the connection could be established!"
