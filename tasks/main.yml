@@ -13,11 +13,16 @@
     - python-mysqldb
     - php-mysql
     - php-xml
+    - python-yaml
+    - php-redis
 
 - name: Run only if it hasn't been done already
   stat: path={{nextcloud_path}}
   register: st
 
-- include: install.yml
+- import_tasks: install.yml
   when:  not st.stat.exists
 
+- import_tasks: plugins.yml
+
+- import_tasks: configure.yml

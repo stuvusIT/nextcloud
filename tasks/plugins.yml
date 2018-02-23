@@ -1,0 +1,17 @@
+---
+- name: Install plugins
+  shell: "sudo -u www-data php occ app:install -n {{ item }}"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  with_items: "{{ nextcloud_plugins }}"
+  register: result
+  failed_when: result.rc != 0 and not "already installed" in result.stdout
+  changed_when: not "already installed" in result.stdout
+
+- name: Activate plugins
+  shell: "sudo -u www-data php occ app:enable -n {{ item }}"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  with_items: "{{ nextcloud_plugins }}"
+  register: result
+  changed_when: false

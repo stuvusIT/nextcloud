@@ -1,0 +1,31 @@
+---
+- name: Create tmp file
+  tempfile:
+    state: file
+  register: tmp_file
+  changed_when: False
+
+- name: Set owner for tmp file
+  file:
+    path: "{{ tmp_file.path }}"
+    owner: www-data
+    group: www-data
+    mode: 0600
+  changed_when: False
+
+- name: Write merged settings to file
+  copy:
+    content: "{{ nextcloud_config | to_nice_yaml }}"
+    dest: "{{ tmp_file.path }}"
+  changed_when: False
+
+- name: Run nextcloud script to configure nextcloud
+  script: "scripts/nextcloud.py {{ tmp_file.path }}"
+  args:
+    chdir: "{{ nextcloud_path }}"
+
+- name: Delete tmp file
+  file:
+    path: "{{ tmp_file.path }}"
+    state: absent
+  changed_when: False
