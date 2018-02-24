@@ -1,11 +1,11 @@
 galaxy_info:
-  author: Insert author(s) here
-  description: Insert description here
+  author: Fritz Otlinghaus
+  description: Install nextcloud instance and configure
   company: stuvus (https://stuvus.uni-stuttgart.de)
 
   license: CC-BY-SA
 
-  min_ansible_version: 2.2
+  min_ansible_version: 2.4
 
   platforms:
     - name: Ubuntu
@@ -17,6 +17,8 @@ galaxy_info:
 
   galaxy_tags:
     - stuvus
-    - Insert ansible galaxy tags here
+    - nextcloud
+    - owncloud
+    - cloud
 
 dependencies: []

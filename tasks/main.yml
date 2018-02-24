@@ -23,6 +23,9 @@
 - import_tasks: install.yml
   when:  not st.stat.exists
 
+- import_tasks: ldap.yml
+  when: nextcloud_ldap_enable
+
 - import_tasks: plugins.yml
 
 - import_tasks: configure.yml
