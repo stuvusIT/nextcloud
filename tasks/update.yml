@@ -1,0 +1,42 @@
+---
+
+- name: Stop nginx mysql and redis
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - nginx
+    - redis
+    - mysql
+
+- name: Move Nextcloud dir to old
+  command: "mv {{ nextcloud_path }} {{ nextcloud_path_old }}"
+
+- name: Download and extract new version
+  include_tasks: download.yml
+  vars:
+    nextcloud_download_version: "{{ nextcloud_version }}"
+    nextcloud_extract_path: "{{ nextcloud_path }}"
+
+- name: Copy old config file
+  copy:
+    src: "{{ nextcloud_path_old }}/config/config.php"
+    dest: "{{ nextcloud_path }}/config/config.php"
+    remote_src: yes
+
+# maybe move datadir
+# maybe copy apps
+
+- name: Run upgrade
+  shell: "sudo -u {{ nextcloud_system_user }} php occ upgrade"
+  args:
+    chdir: "{{ nextcloud_path }}"
+
+- name: Start nginx mysql and redis
+  systemd:
+    name: "{{ item }}"
+    state: started
+  with_items:
+    - nginx
+    - redis
+    - mysql
