@@ -8,8 +8,8 @@
 - name: Set owner for tmp file
   file:
     path: "{{ tmp_file.path }}"
-    owner: www-data
-    group: www-data
+    owner: "{{ nextcloud_system_user }}"
+    group: "{{ nextcloud_system_user }}"
     mode: 0600
   changed_when: False
 

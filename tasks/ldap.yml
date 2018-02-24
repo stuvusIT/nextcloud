@@ -1,105 +1,44 @@
 ---
-- name: Enable the ldap plugin from command line using sudo since become is shitty
-  shell: sudo -u www-data php occ app:enable user_ldap
+- name: Enable the ldap plugin from command line using sudo
+  shell: "sudo -u {{ nextcloud_system_user }} php occ app:enable user_ldap"
   args:
     chdir: "{{ nextcloud_path }}"
 
 - name: Create empty ldap config
-  shell: sudo -u www-data php occ ldap:create-empty-config
+  shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:create-empty-config"
   args:
     chdir: "{{ nextcloud_path }}"
   register: config_id_output
 
-- set_fact:
+- name: Split config id out of stdout and write to var
+  set_fact:
     config_id: "{{ config_id_output['stdout'].split(' ') | last}}"
 
-- name: Set ldapAgentName
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapAgentName {{ldapAgentName}}"
+- name: "Set {{ item.name }} to {{ item.value }}" 
+  shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:set-config {{ config_id }} {{ item.name }} {{ item.value }}"
   args:
     chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapAgentPassword
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapAgentPassword {{ldapAgentPassword}}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapBase
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapBase {{ldapBase}}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapBaseGroups
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapBaseGroups {{ldapBaseGroups}}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapBaseUsers
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapBaseUsers '{{ldapBaseUsers}}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapConfigurationActive  
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapConfigurationActive 1"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapGroupFilter 
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapGroupFilter '{{ ldapGroupFilter }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: ldapGroupFilterObjectclass
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapGroupFilterObjectclass {{ ldapGroupFilterObjectclass }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapGroupMemberAssocAttr 
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapGroupMemberAssocAttr {{ ldapGroupMemberAssocAttr }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapHost 
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapHost {{ ldapHost }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapLoginFilter
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapLoginFilter '{{ ldapLoginFilter }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapUserDisplayName
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapUserDisplayName {{ ldapUserDisplayName }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapUserFilter
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapUserFilter '{{ ldapUserFilter }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapUserFilterObjectclass
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapUserFilterObjectclass '{{ ldapUserFilterObjectclass }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldaphasMemberOfFilterSupport
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} hasMemberOfFilterSupport   '{{ ldaphasMemberOfFilterSupport }}'"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapPort
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapPort {{ ldapPort }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
-
-- name: Set ldapEmailAttribute
-  shell: "sudo -u www-data php occ ldap:set-config {{ config_id }} ldapEmailAttribute {{ ldapEmailAttribute }}"
-  args:
-    chdir: "{{ nextcloud_path }}"
+  with_items:
+    - { name: ldapAgentName, value: "{{ nextcloud_ldapAgentName }}" }
+    - { name: ldapAgentPassword, value: "{{ nextcloud_ldapAgentPassword }}" }
+    - { name: ldapBase, value: "{{ nextcloud_ldapBase }}" }
+    - { name: ldapBaseGroups, value: "{{ nextcloud_ldapBaseGroups }}" }
+    - { name: ldapBaseUsers, value: "{{ nextcloud_ldapBaseUsers }}" }
+    - { name: ldapConfigurationActive, value: "1" }
+    - { name: ldapGroupFilter, value: "{{ nextcloud_ldapGroupFilter }}" }
+    - { name: ldapFilterObjectclass, value: "{{ nextcloud_ldapFilterObjectclass }}" }
+    - { name: ldapGroupMemberAssocAttr, value: "{{ nextcloud_ldapGroupMemberAssocAttr }}" }
+    - { name: ldapHost, value: "{{ nextcloud_ldapHost }}" }
+    - { name: ldapLoginFilter, value: "{{ nextcloud_ldapLoginFilter }}" }
+    - { name: ldapUserDisplayName, value: "{{ nextcloud_ldapUserDisplayName }}" }
+    - { name: ldapUserFilter, value: "{{ nextcloud_ldapUserFilter }}" }
+    - { name: ldapUserFilterObjectclass, value: "{{ nextcloud_ldapUserFilterObjectclass }}" }
+    - { name: hasMemberOfFilterSupport, value: "{{ nextcloud_ldapHasMemberOfFilterSupport }}" }
+    - { name: ldapPort, value: "{{ nextcloud_ldapPort }}" }
+    - { name: ldapEmailAttribute, value: "{{ nextcloud_ldapEmailAttribute }}" }
 
 - name: Test ldap plugin config
-  shell: "sudo -u www-data php occ ldap:test-config {{ config_id }}"
+  shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:test-config {{ config_id }}"
   args:
     chdir: "{{ nextcloud_path }}"
   register: valid_config

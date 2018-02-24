@@ -7,3 +7,5 @@ nextcloud_datadir_path: /var/www/nextcloud_data
 nextcloud_mysql_user: nextcloud
 nextcloud_mysql_database_name: nextcloud
 nextcloud_user: admin
+nextcloud_system_user: www-data
+nextcloud_system_group: www-data

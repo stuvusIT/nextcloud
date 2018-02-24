@@ -1,5 +1,5 @@
 ---
-- name: Update repositories cache and install needed php packages
+- name: Update repositories cache and install packages
   apt:
     name: "{{item}}"
     update_cache: yes
@@ -16,7 +16,7 @@
     - python-yaml
     - php-redis
 
-- name: Run only if it hasn't been done already
+- name: Check if Nextcloud folder exists
   stat: path={{nextcloud_path}}
   register: st
 
@@ -26,3 +26,14 @@
 - import_tasks: plugins.yml
 
 - import_tasks: configure.yml
+
+- name: Get version number
+  shell: 'sudo -u {{ nextcloud_system_user }} php occ -V'
+  register: result
+  args:
+    chdir: "{{ nextcloud_path }}/"
+  changed_when: false
+
+- name: Update nextcloud
+  import_tasks: update.yml
+  when: nextcloud_version | version_compare((result.stdout | splitext)[1], '>')
