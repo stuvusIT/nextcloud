@@ -27,27 +27,78 @@ A Debian-based system
 | `nextcloud_ldap_enable`         | `false`                   | Enable ldap                                                                                                                       |
 
 ### LDAP Settings 
-When ldap 
+This is a list of the ldap attributes for a description and behaviour please see the [Nextcloud documentation](https://docs.nextcloud.com/server/13/admin_manual/configuration_user/user_auth_ldap.html#configuration)
 
-| Name                                   | Required/Default   | Description                                                                                    |
-|:---------------------------------------|:-------------------|:-----------------------------------------------------------------------------------------------|
-| `nextcloud_ldapAgentName`              | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapAgentPassword`          | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapBase`                   | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapBaseUsers`              | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapBaseGroups`             | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapGroupFilter`            | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapGroupFilterObjectclass` | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapGroupMemberAssocAttr`   | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapHost`                   | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapLoginFilter`            | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapUserDisplayName`        | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapUserFilter`             | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapUserFilterObjectclass`  | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapPort`                   | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
-| `nextcloud_ldapEmailAttribute`         | :heavy_check_mark: | Cache directory to download Nextcloud files to on the execution machine running this playbook. |
+| Name                                      |
+|:------------------------------------------|
+| `nextcloud_hasMemberOfFilterSupport`      |
+| `nextcloud_hasPagedResultSupport`         |
+| `nextcloud_homeFolderNamingRule`          |
+| `nextcloud_lastJpegPhotoLookup`           |
+| `nextcloud_ldapAgentName`                 |
+| `nextcloud_ldapAgentPassword`             |
+| `nextcloud_ldapAttributesForGroupSearch`  |
+| `nextcloud_ldapAttributesForUserSearch`   |
+| `nextcloud_ldapBackupHost`                |
+| `nextcloud_ldapBackupPort`                |
+| `nextcloud_ldapBase`                      |
+| `nextcloud_ldapBaseGroups`                |
+| `nextcloud_ldapBaseUsers`                 |
+| `nextcloud_ldapCacheTTL`                  |
+| `nextcloud_ldapConfigurationActive`       |
+| `nextcloud_ldapDefaultPPolicyDN`          |
+| `nextcloud_ldapDynamicGroupMemberURL`     |
+| `nextcloud_ldapEmailAttribute`            |
+| `nextcloud_ldapExperiencedAdmin`          |
+| `nextcloud_ldapExpertUUIDGroupAttr`       |
+| `nextcloud_ldapExpertUUIDUserAttr`        |
+| `nextcloud_ldapExpertUsernameAttr`        |
+| `nextcloud_ldapGidNumber`                 |
+| `nextcloud_ldapGroupDisplayName`          |
+| `nextcloud_ldapGroupFilter`               |
+| `nextcloud_ldapGroupFilterGroups`         |
+| `nextcloud_ldapGroupFilterMode`           |
+| `nextcloud_ldapGroupFilterObjectclass`    |
+| `nextcloud_ldapGroupMemberAssocAttr`      |
+| `nextcloud_ldapHost`                      |
+| `nextcloud_ldapIgnoreNamingRules`         |
+| `nextcloud_ldapLoginFilter`               |
+| `nextcloud_ldapLoginFilterAttributes`     |
+| `nextcloud_ldapLoginFilterEmail`          |
+| `nextcloud_ldapLoginFilterMode`           |
+| `nextcloud_ldapLoginFilterUsername`       |
+| `nextcloud_ldapNestedGroups`              |
+| `nextcloud_ldapOverrideMainServer`        |
+| `nextcloud_ldapPagingSize`                |
+| `nextcloud_ldapPort`                      |
+| `nextcloud_ldapQuotaAttribute`            |
+| `nextcloud_ldapQuotaDefault`              |
+| `nextcloud_ldapTLS`                       |
+| `nextcloud_ldapUserDisplayName`           |
+| `nextcloud_ldapUserDisplayName2`          |
+| `nextcloud_ldapUserFilter`                |
+| `nextcloud_ldapUserFilterGroups`          |
+| `nextcloud_ldapUserFilterMode`            |
+| `nextcloud_ldapUserFilterObjectclass`     |
+| `nextcloud_ldapUuidGroupAttribute`        |
+| `nextcloud_ldapUuidUserAttribute`         |
+| `nextcloud_turnOffCertCheck`              |
+| `nextcloud_turnOnPasswordChange`          |
+| `nextcloud_useMemberOfToDetectMembership` |
+
 
 ### `nextcloud_config`
+`nextcloud_config` is an object containing the settings for the Nextcloud instance. Do not use it to enable/disable apps and/or for setting up ldap.
+The setup of this object is similar to the output of the `php occ config:list` option.
+Under nextcloud_config you should have two objects called `system` and `apps` under those objects you can further objects to describe the configuration as an example setting the trusted domains for Nextcloud.
+```yml
+nextcloud_config:
+  system:
+    trusted_domains:
+	  - nc.example.com
+	  - nextcloud.example.com
+```
+Every object that you put under nextcloud config is expanded in its path and then written to the Nextcloud instance.
 
 ## Example Playbook
 
@@ -233,21 +284,6 @@ php_fpm_php_ini_values:
   - section: PHP
     option: opcache.revalidate_freq
     value: 1
-mattermost_mattermail_config:
-  Directory: "./data/"
-  Profiles:
-    - Name: Orders
-      Channels: 
-        - orders
-      Email:
-        ImapServer: imap.example.com:143
-        Username: orders@example.com
-        Password: password
-      Mattermost:
-        Server: https://example.mattermost.com
-        Team: team1
-        User: mattermail@example.com
-        Password: password
 ```
 
 ## License
