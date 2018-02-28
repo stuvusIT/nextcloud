@@ -3,59 +3,48 @@
   shell: "sudo -u {{ nextcloud_system_user }} php occ app:enable user_ldap"
   args:
     chdir: "{{ nextcloud_path }}"
+  changed_when: false
 
-- name: Create empty ldap config
+- name: Get ldap config id
   shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:show-config | grep -w 'Configuration' | awk -F'|' '{print $3}'"
   args:
     chdir: "{{ nextcloud_path }}"
   register: config_id_exists_output
+  changed_when: false
 
 - name: Get config id from stdout
   set_fact:
-    config_id: "{{ config_id_exists_output | trim  }}"
-  when: config_id_exists_output != ""
+    config_id: "{{ config_id_exists_output.stdout | trim  }}"
+  when: config_id_exists_output.stdout != ""
+  changed_when: false
 
 - name: Create empty ldap config
   shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:create-empty-config -p"
   args:
     chdir: "{{ nextcloud_path }}"
-  when: config_id_exists_output == ""
+  when: config_id_exists_output.stdout == ""
   register: config_id_output
 
 - name: Split config id out of stdout and write to var
   set_fact:
     config_id: "{{ config_id_output.stdout | trim }}"
-  when: config_id_exists_output == ""
+  when: config_id_exists_output.stdout == ""
+  changed_when: false
 
-- name: "Set {{ item.name }} to {{ item.value }}" 
-  shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:set-config {{ config_id }} {{ item.name }} {{ item.value }}"
+- name: Set ldap attributes
+  shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:set-config {{ config_id }} {{ item.key }} '{{ item.value }}'"
   args:
     chdir: "{{ nextcloud_path }}"
-  with_items:
-    - { name: ldapAgentName, value: "{{ nextcloud_ldapAgentName }}" }
-    - { name: ldapAgentPassword, value: "{{ nextcloud_ldapAgentPassword }}" }
-    - { name: ldapBase, value: "{{ nextcloud_ldapBase }}" }
-    - { name: ldapBaseGroups, value: "{{ nextcloud_ldapBaseGroups }}" }
-    - { name: ldapBaseUsers, value: "{{ nextcloud_ldapBaseUsers }}" }
-    - { name: ldapConfigurationActive, value: "1" }
-    - { name: ldapGroupFilter, value: "{{ nextcloud_ldapGroupFilter }}" }
-    - { name: ldapFilterObjectclass, value: "{{ nextcloud_ldapFilterObjectclass }}" }
-    - { name: ldapGroupMemberAssocAttr, value: "{{ nextcloud_ldapGroupMemberAssocAttr }}" }
-    - { name: ldapHost, value: "{{ nextcloud_ldapHost }}" }
-    - { name: ldapLoginFilter, value: "{{ nextcloud_ldapLoginFilter }}" }
-    - { name: ldapUserDisplayName, value: "{{ nextcloud_ldapUserDisplayName }}" }
-    - { name: ldapUserFilter, value: "{{ nextcloud_ldapUserFilter }}" }
-    - { name: ldapUserFilterObjectclass, value: "{{ nextcloud_ldapUserFilterObjectclass }}" }
-    - { name: hasMemberOfFilterSupport, value: "{{ nextcloud_ldapHasMemberOfFilterSupport }}" }
-    - { name: ldapPort, value: "{{ nextcloud_ldapPort }}" }
-    - { name: ldapEmailAttribute, value: "{{ nextcloud_ldapEmailAttribute }}" }
+  with_dict: "{{ nextcloud_ldap }}"
+  changed_when: false
 
 - name: Test ldap plugin config
   shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:test-config {{ config_id }}"
   args:
     chdir: "{{ nextcloud_path }}"
   register: valid_config
+  changed_when: false
 
 - fail:
-    msg: "The configuration is invalid. Please have a look at the logs for further details."
+    msg: "{{ valid_config.stdout }}"
   when: valid_config['stdout'] != "The configuration is valid and the connection could be established!"

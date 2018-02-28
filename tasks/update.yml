@@ -23,6 +23,8 @@
     src: "{{ nextcloud_path_old }}/config/config.php"
     dest: "{{ nextcloud_path }}/config/config.php"
     remote_src: yes
+    owner: "{{ nextcloud_system_user }}"
+    group: "{{ nextcloud_system_group }}"
 
 # maybe move datadir
 # maybe copy apps

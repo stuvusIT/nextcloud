@@ -39,4 +39,4 @@
 
 - name: Update nextcloud
   import_tasks: update.yml
-  when: nextcloud_version | version_compare((result.stdout | splitext)[1], '>')
+  when: nextcloud_version | version_compare(result.stdout.split(' ')[1], '>')

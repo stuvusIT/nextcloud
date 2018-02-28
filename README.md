@@ -25,66 +25,72 @@ A Debian-based system
 | `nextcloud_plugins`             | `[]`                      | List of Nextcloud plugins to install and activate                                                                                 |
 | `nextcloud_config`              | `[]`                      | Dict of Nextcloud setting read more below                                                                                         |
 | `nextcloud_ldap_enable`         | `false`                   | Enable ldap                                                                                                                       |
+| `nextcloud_ldap`                | `false`                   | Dict containing the ldap attributes                                                                                               |
 
 ### LDAP Settings 
 This is a list of the ldap attributes for a description and behaviour please see the [Nextcloud documentation](https://docs.nextcloud.com/server/13/admin_manual/configuration_user/user_auth_ldap.html#configuration)
+To set a LDAP attribute put the attribute in the nextcloud_ldap dict.
+```yml
+nextcloud_ldap:
+  ldapHost: ldaps://ldap.example.com
+```
 
 | Name                                      |
 |:------------------------------------------|
-| `nextcloud_hasMemberOfFilterSupport`      |
-| `nextcloud_hasPagedResultSupport`         |
-| `nextcloud_homeFolderNamingRule`          |
-| `nextcloud_lastJpegPhotoLookup`           |
-| `nextcloud_ldapAgentName`                 |
-| `nextcloud_ldapAgentPassword`             |
-| `nextcloud_ldapAttributesForGroupSearch`  |
-| `nextcloud_ldapAttributesForUserSearch`   |
-| `nextcloud_ldapBackupHost`                |
-| `nextcloud_ldapBackupPort`                |
-| `nextcloud_ldapBase`                      |
-| `nextcloud_ldapBaseGroups`                |
-| `nextcloud_ldapBaseUsers`                 |
-| `nextcloud_ldapCacheTTL`                  |
-| `nextcloud_ldapConfigurationActive`       |
-| `nextcloud_ldapDefaultPPolicyDN`          |
-| `nextcloud_ldapDynamicGroupMemberURL`     |
-| `nextcloud_ldapEmailAttribute`            |
-| `nextcloud_ldapExperiencedAdmin`          |
-| `nextcloud_ldapExpertUUIDGroupAttr`       |
-| `nextcloud_ldapExpertUUIDUserAttr`        |
-| `nextcloud_ldapExpertUsernameAttr`        |
-| `nextcloud_ldapGidNumber`                 |
-| `nextcloud_ldapGroupDisplayName`          |
-| `nextcloud_ldapGroupFilter`               |
-| `nextcloud_ldapGroupFilterGroups`         |
-| `nextcloud_ldapGroupFilterMode`           |
-| `nextcloud_ldapGroupFilterObjectclass`    |
-| `nextcloud_ldapGroupMemberAssocAttr`      |
-| `nextcloud_ldapHost`                      |
-| `nextcloud_ldapIgnoreNamingRules`         |
-| `nextcloud_ldapLoginFilter`               |
-| `nextcloud_ldapLoginFilterAttributes`     |
-| `nextcloud_ldapLoginFilterEmail`          |
-| `nextcloud_ldapLoginFilterMode`           |
-| `nextcloud_ldapLoginFilterUsername`       |
-| `nextcloud_ldapNestedGroups`              |
-| `nextcloud_ldapOverrideMainServer`        |
-| `nextcloud_ldapPagingSize`                |
-| `nextcloud_ldapPort`                      |
-| `nextcloud_ldapQuotaAttribute`            |
-| `nextcloud_ldapQuotaDefault`              |
-| `nextcloud_ldapTLS`                       |
-| `nextcloud_ldapUserDisplayName`           |
-| `nextcloud_ldapUserDisplayName2`          |
-| `nextcloud_ldapUserFilter`                |
-| `nextcloud_ldapUserFilterGroups`          |
-| `nextcloud_ldapUserFilterMode`            |
-| `nextcloud_ldapUserFilterObjectclass`     |
-| `nextcloud_ldapUuidGroupAttribute`        |
-| `nextcloud_ldapUuidUserAttribute`         |
-| `nextcloud_turnOffCertCheck`              |
-| `nextcloud_turnOnPasswordChange`          |
-| `nextcloud_useMemberOfToDetectMembership` |
+| `hasMemberOfFilterSupport`      |
+| `hasPagedResultSupport`         |
+| `homeFolderNamingRule`          |
+| `lastJpegPhotoLookup`           |
+| `ldapAgentName`                 |
+| `ldapAgentPassword`             |
+| `ldapAttributesForGroupSearch`  |
+| `ldapAttributesForUserSearch`   |
+| `ldapBackupHost`                |
+| `ldapBackupPort`                |
+| `ldapBase`                      |
+| `ldapBaseGroups`                |
+| `ldapBaseUsers`                 |
+| `ldapCacheTTL`                  |
+| `ldapConfigurationActive`       |
+| `ldapDefaultPPolicyDN`          |
+| `ldapDynamicGroupMemberURL`     |
+| `ldapEmailAttribute`            |
+| `ldapExperiencedAdmin`          |
+| `ldapExpertUUIDGroupAttr`       |
+| `ldapExpertUUIDUserAttr`        |
+| `ldapExpertUsernameAttr`        |
+| `ldapGidNumber`                 |
+| `ldapGroupDisplayName`          |
+| `ldapGroupFilter`               |
+| `ldapGroupFilterGroups`         |
+| `ldapGroupFilterMode`           |
+| `ldapGroupFilterObjectclass`    |
+| `ldapGroupMemberAssocAttr`      |
+| `ldapHost`                      |
+| `ldapIgnoreNamingRules`         |
+| `ldapLoginFilter`               |
+| `ldapLoginFilterAttributes`     |
+| `ldapLoginFilterEmail`          |
+| `ldapLoginFilterMode`           |
+| `ldapLoginFilterUsername`       |
+| `ldapNestedGroups`              |
+| `ldapOverrideMainServer`        |
+| `ldapPagingSize`                |
+| `ldapPort`                      |
+| `ldapQuotaAttribute`            |
+| `ldapQuotaDefault`              |
+| `ldapTLS`                       |
+| `ldapUserDisplayName`           |
+| `ldapUserDisplayName2`          |
+| `ldapUserFilter`                |
+| `ldapUserFilterGroups`          |
+| `ldapUserFilterMode`            |
+| `ldapUserFilterObjectclass`     |
+| `ldapUuidGroupAttribute`        |
+| `ldapUuidUserAttribute`         |
+| `turnOffCertCheck`              |
+| `turnOnPasswordChange`          |
+| `useMemberOfToDetectMembership` |
 
 
 ### `nextcloud_config`
