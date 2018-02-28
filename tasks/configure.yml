@@ -19,7 +19,7 @@
     dest: "{{ tmp_file.path }}"
   changed_when: False
 
-- name: Run nextcloud script to configure nextcloud
+- name: Run Nextcloud script to configure the Nextcloud instance
   script: "scripts/nextcloud.py {{ tmp_file.path }}"
   args:
     chdir: "{{ nextcloud_path }}"

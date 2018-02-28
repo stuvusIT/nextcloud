@@ -101,8 +101,8 @@ Under nextcloud_config you should have two objects called `system` and `apps` un
 nextcloud_config:
   system:
     trusted_domains:
-	  - nc.example.com
-	  - nextcloud.example.com
+      - nc.example.com
+      - nextcloud.example.com
 ```
 Every object that you put under nextcloud config is expanded in its path and then written to the Nextcloud instance.
 

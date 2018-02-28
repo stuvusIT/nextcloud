@@ -1,5 +1,5 @@
 ---
-- name: Update repositories cache and install packages
+- name: Update cache and install packages
   apt:
     name: "{{item}}"
     update_cache: yes
@@ -37,6 +37,6 @@
     chdir: "{{ nextcloud_path }}/"
   changed_when: false
 
-- name: Update nextcloud
+- name: Update Nextcloud
   import_tasks: update.yml
   when: nextcloud_version | version_compare(result.stdout.split(' ')[1], '>')

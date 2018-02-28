@@ -1,6 +1,10 @@
 ---
+- name: Enable maintenance mode
+  shell: "sudo -u {{ nextcloud_system_user }} php occ maintenance:mode --on"
+  args:
+    chdir: "{{ nextcloud_path }}"
 
-- name: Stop nginx mysql and redis
+- name: MySQL and Redis
   systemd:
     name: "{{ item }}"
     state: stopped
@@ -9,7 +13,7 @@
     - redis
     - mysql
 
-- name: Move Nextcloud dir to old
+- name: "Move Nextcloud dir to {{ nextcloud_path_old }}"
   command: "mv {{ nextcloud_path }} {{ nextcloud_path_old }}"
 
 - name: Download and extract new version
@@ -26,15 +30,15 @@
     owner: "{{ nextcloud_system_user }}"
     group: "{{ nextcloud_system_group }}"
 
-# maybe move datadir
-# maybe copy apps
+- name: Move apps over to the new install
+  command: "mv {{ nextcloud_path_old }}/apps {{ nextcloud_path }}/apps"
 
-- name: Run upgrade
+- name: Run Nextcloud upgrade
   shell: "sudo -u {{ nextcloud_system_user }} php occ upgrade"
   args:
     chdir: "{{ nextcloud_path }}"
 
-- name: Start nginx mysql and redis
+- name: Start Nginx MySQL and Redis
   systemd:
     name: "{{ item }}"
     state: started
@@ -42,3 +46,8 @@
     - nginx
     - redis
     - mysql
+
+- name: Disable maintenance mode
+  shell: "sudo -u {{ nextcloud_system_user }} php occ maintenance:mode --off"
+  args:
+    chdir: "{{ nextcloud_path }}"
