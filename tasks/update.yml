@@ -4,7 +4,7 @@
   args:
     chdir: "{{ nextcloud_path }}"
 
-- name: MySQL and Redis
+- name: Stop MySQL, Nginx and Redis
   systemd:
     name: "{{ item }}"
     state: stopped
@@ -13,8 +13,8 @@
     - redis
     - mysql
 
-- name: "Move Nextcloud dir to {{ nextcloud_path_old }}"
-  command: "mv {{ nextcloud_path }} {{ nextcloud_path_old }}"
+- name: "Move Nextcloud dir to {{ nextcloud_path_old }}_{{ nextcloud_version }}"
+  command: "mv {{ nextcloud_path }} {{ nextcloud_path_old }}_{{ nextcloud_version }}"
 
 - name: Download and extract new version
   include_tasks: download.yml
@@ -24,21 +24,21 @@
 
 - name: Copy old config file
   copy:
-    src: "{{ nextcloud_path_old }}/config/config.php"
+    src: "{{ nextcloud_path_old }}_{{ nextcloud_version }}/config/config.php"
     dest: "{{ nextcloud_path }}/config/config.php"
     remote_src: yes
     owner: "{{ nextcloud_system_user }}"
     group: "{{ nextcloud_system_group }}"
 
 - name: Move apps over to the new install
-  command: "mv {{ nextcloud_path_old }}/apps {{ nextcloud_path }}/apps"
+  command: "mv {{ nextcloud_path_old }}_{{ nextcloud_version }}/apps {{ nextcloud_path }}/apps"
 
 - name: Run Nextcloud upgrade
   shell: "sudo -u {{ nextcloud_system_user }} php occ upgrade"
   args:
     chdir: "{{ nextcloud_path }}"
 
-- name: Start Nginx MySQL and Redis
+- name: Start Nginx, MySQL and Redis
   systemd:
     name: "{{ item }}"
     state: started

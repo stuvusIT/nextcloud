@@ -18,10 +18,10 @@
 
 - name: Check if Nextcloud folder exists
   stat: path={{nextcloud_path}}
-  register: st
+  register: result
 
 - import_tasks: install.yml
-  when:  not st.stat.exists
+  when:  not result.stat.exists
 
 - import_tasks: ldap.yml
   when: nextcloud_ldap_enable

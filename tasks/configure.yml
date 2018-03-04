@@ -5,14 +5,6 @@
   register: tmp_file
   changed_when: False
 
-- name: Set owner for tmp file
-  file:
-    path: "{{ tmp_file.path }}"
-    owner: "{{ nextcloud_system_user }}"
-    group: "{{ nextcloud_system_user }}"
-    mode: 0600
-  changed_when: False
-
 - name: Write merged settings to file
   copy:
     content: "{{ nextcloud_config | to_nice_yaml }}"

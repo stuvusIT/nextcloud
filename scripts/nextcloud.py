@@ -19,7 +19,7 @@ def get_type_php_from_object(value):
 def generate_paths(data):
     """ Return list of lists containing the required values to pass to call """
     execute_list = []
-    if not isinstance(data, list) and not isinstance(data, dict):
+    if not isinstance(data, (list, dict)):
         return data
     if isinstance(data, dict):
         for key, value in data.iteritems():

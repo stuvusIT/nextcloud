@@ -8,35 +8,35 @@ A Debian-based system
 
 ## Role Variables
 
-| Name                            | Required/Default          | Description                                                                                                                       |
-|:--------------------------------|:--------------------------|:----------------------------------------------------------------------------------------------------------------------------------|
-| `global_cache_dir`              | :heavy_check_mark:        | Cache directory to download Nextcloud files to on the execution machine running this playbook.                                    |
-| `nextcloud_version`             | `13.0.0`                  | Version number of the Nextcloud version to be installed                                                                           |
-| `nextcloud_system_user`         | `www-data`                | User under which Nextcloud should run. The user has to exist.                                                                     |
-| `nextcloud_system_group`        | `www-data`                | Group under which Nextcloud should run. The group has to exist.                                                                   |
-| `nextcloud_path`                | `/var/www/nextcloud`      | Path to install nextcloud to                                                                                                      |
-| `nextcloud_path_old`            | `/var/www/nextcloud_old`  | Path to store the nextcloud dir when upgrading.                                                                                   |
-| `nextcloud_data_dir_path`       | `/var/www/nextcloud_data` | Path to store the nextcloud data in. This can not be in the `{{ nextcloud_path }}` its self, because we move dirs during upgrades |
-| `nextcloud_mysql_user`          | `nextcloud`               | Default user to use for database connections                                                                                      |
-| `nextcloud_mysql_password`      | :heavy_check_mark:        | Mysql password                                                                                                                    |
-| `nextcloud_mysql_database_name` | `nextcloud`               | Default database name                                                                                                             |
-| `nextcloud_user`                | `admin`                   | Admin user to be installed                                                                                                        |
-| `nextcloud_password`            | :heavy_check_mark:        | Admin password                                                                                                                    |
-| `nextcloud_plugins`             | `[]`                      | List of Nextcloud plugins to install and activate                                                                                 |
-| `nextcloud_config`              | `[]`                      | Dict of Nextcloud setting read more below                                                                                         |
-| `nextcloud_ldap_enable`         | `false`                   | Enable ldap                                                                                                                       |
-| `nextcloud_ldap`                | `false`                   | Dict containing the ldap attributes                                                                                               |
+| Name                            | Required/Default          | Description                                                                                                                     |
+|:--------------------------------|:--------------------------|:--------------------------------------------------------------------------------------------------------------------------------|
+| `global_cache_dir`              | :heavy_check_mark:        | Cache directory to download Nextcloud files to on the execution machine running this playbook.                                  |
+| `nextcloud_version`             | `13.0.0`                  | Version number of the Nextcloud version to be installed                                                                         |
+| `nextcloud_system_user`         | `www-data`                | User under which Nextcloud should run. The user has to exist.                                                                   |
+| `nextcloud_system_group`        | `www-data`                | Group under which Nextcloud should run. The group has to exist.                                                                 |
+| `nextcloud_path`                | `/var/www/nextcloud`      | Path to install nextcloud to                                                                                                    |
+| `nextcloud_path_old`            | `/var/www/nextcloud_old`  | Path to store the nextcloud dir when upgrading. Note that `nextcloud_version` number will be added to that path.                |
+| `nextcloud_data_dir_path`       | `/var/www/nextcloud_data` | Path to store the nextcloud data in. This can not be in the `{{ nextcloud_path }}` itself, because we move dirs during upgrades |
+| `nextcloud_mysql_user`          | `nextcloud`               | Default user to use for database connections                                                                                    |
+| `nextcloud_mysql_password`      | :heavy_check_mark:        | Mysql password                                                                                                                  |
+| `nextcloud_mysql_database_name` | `nextcloud`               | Default database name                                                                                                           |
+| `nextcloud_user`                | `admin`                   | Admin user to be installed                                                                                                      |
+| `nextcloud_password`            | :heavy_check_mark:        | Admin password                                                                                                                  |
+| `nextcloud_plugins`             | `[]`                      | List of Nextcloud plugins to install and activate                                                                               |
+| `nextcloud_config`              | `[]`                      | Dict of Nextcloud setting read more below                                                                                       |
+| `nextcloud_ldap_enable`         | `false`                   | Enable ldap                                                                                                                     |
+| `nextcloud_ldap`                | `false`                   | Dict containing the ldap attributes                                                                                             |
 
 ### LDAP Settings 
-This is a list of the ldap attributes for a description and behaviour please see the [Nextcloud documentation](https://docs.nextcloud.com/server/13/admin_manual/configuration_user/user_auth_ldap.html#configuration)
+This is a list of the ldap attributes, for a description and behaviour please see the [Nextcloud documentation](https://docs.nextcloud.com/server/13/admin_manual/configuration_user/user_auth_ldap.html#configuration)
 To set a LDAP attribute put the attribute in the nextcloud_ldap dict.
 ```yml
 nextcloud_ldap:
   ldapHost: ldaps://ldap.example.com
 ```
 
-| Name                                      |
-|:------------------------------------------|
+| Name                            |
+|:--------------------------------|
 | `hasMemberOfFilterSupport`      |
 | `hasPagedResultSupport`         |
 | `homeFolderNamingRule`          |
@@ -96,7 +96,7 @@ nextcloud_ldap:
 ### `nextcloud_config`
 `nextcloud_config` is an object containing the settings for the Nextcloud instance. Do not use it to enable/disable apps and/or for setting up ldap.
 The setup of this object is similar to the output of the `php occ config:list` option.
-Under nextcloud_config you should have two objects called `system` and `apps` under those objects you can further objects to describe the configuration as an example setting the trusted domains for Nextcloud.
+Under `nextcloud_config` you should have two objects called `system` and `apps` under those objects you can further describe the configuration as an example setting the trusted domains for Nextcloud.
 ```yml
 nextcloud_config:
   system:
