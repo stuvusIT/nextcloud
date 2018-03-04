@@ -14,7 +14,7 @@
 
 - name: Get config id from stdout
   set_fact:
-    config_id: "{{ config_id_exists_output.stdout | trim  }}"
+    config_id: "{{ config_id_exists_output.stdout | trim }}"
   when: config_id_exists_output.stdout != ""
   changed_when: false
 

@@ -19,4 +19,3 @@
   args:
     chdir: "{{ nextcloud_path }}/"
 
-

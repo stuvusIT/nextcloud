@@ -17,7 +17,8 @@
     - php-redis
 
 - name: Check if Nextcloud folder exists
-  stat: path={{nextcloud_path}}
+  stat: 
+    path: "{{ nextcloud_path }}"
   register: result
 
 - import_tasks: install.yml
@@ -34,7 +35,7 @@
   shell: 'sudo -u {{ nextcloud_system_user }} php occ -V'
   register: result
   args:
-    chdir: "{{ nextcloud_path }}/"
+    chdir: "{{ nextcloud_path }}"
   changed_when: false
 
 - name: Update Nextcloud
