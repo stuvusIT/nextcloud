@@ -1,0 +1,55 @@
+---
+- name: Enable the LDAP plugin from command line using sudo
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ app:enable user_ldap"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  changed_when: false
+
+- name: Get LDAP config id
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ ldap:show-config | grep -w 'Configuration' | awk -F'|' '{print $3}'"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  register: config_id_exists_output
+  changed_when: false
+
+- name: Get config id from stdout
+  set_fact:
+    config_id: "{{ config_id_exists_output.stdout | trim }}"
+  when: config_id_exists_output.stdout != ""
+  changed_when: false
+
+- name: Create empty LDAP config
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ ldap:create-empty-config -p"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  when: config_id_exists_output.stdout == ""
+  register: config_id_output
+
+- name: Split config id out of stdout and write to var
+  set_fact:
+    config_id: "{{ config_id_output.stdout | trim }}"
+  when: config_id_exists_output.stdout == ""
+  changed_when: false
+
+- name: Set LDAP attributes
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ ldap:set-config {{ config_id }} {{ item.key }} '{{ item.value }}'"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  with_dict: "{{ nextcloud_ldap }}"
+  changed_when: false
+
+- name: Test LDAP plugin config
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ ldap:test-config {{ config_id }}"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  register: valid_config
+  changed_when: false
+
+- fail:
+    msg: "{{ valid_config.stdout }}"
+  when: valid_config['stdout'] != "The configuration is valid and the connection could be established!"

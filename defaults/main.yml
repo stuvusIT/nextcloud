@@ -1,0 +1,11 @@
+---
+nextcloud_plugins: []
+nextcloud_version: 13.0.0
+nextcloud_path: /var/www/nextcloud
+nextcloud_path_old: /var/www/nextcloud_old
+nextcloud_datadir_path: /var/www/nextcloud_data
+nextcloud_mysql_user: nextcloud
+nextcloud_mysql_database_name: nextcloud
+nextcloud_user: admin
+nextcloud_system_user: www-data
+nextcloud_system_group: www-data

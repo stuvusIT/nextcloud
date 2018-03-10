@@ -1,0 +1,26 @@
+---
+- name: Download latest version
+  get_url:
+    url: "https://download.nextcloud.com/server/releases/nextcloud-{{ nextcloud_download_version }}.zip"
+    dest: "{{ global_cache_dir | mandatory }}/"
+  become: false
+  delegate_to: localhost
+
+- name: Extract Nextcloud into tmp dir
+  unarchive:
+    src: "{{ global_cache_dir }}/nextcloud-{{ nextcloud_download_version }}.zip"
+    dest: "/tmp"
+    owner: "{{ nextcloud_system_user }}"
+    group: "{{ nextcloud_system_user }}"
+
+- name: Copy Nextcloud from tmp dir to install dir
+  command: "mv -f /tmp/nextcloud {{ nextcloud_extract_path }}"
+
+- name: Set permissions on root
+  file: 
+    path: "{{ nextcloud_extract_path }}"
+    state: directory 
+    mode: 0755
+    owner: "{{ nextcloud_system_user }}"
+    group: "{{ nextcloud_system_group }}"
+

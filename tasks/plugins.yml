@@ -1,0 +1,18 @@
+---
+- name: Install plugins
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ app:install -n {{ item }}"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  with_items: "{{ nextcloud_plugins }}"
+  register: result
+  failed_when: result.rc != 0 and not "already installed" in result.stdout
+  changed_when: not "already installed" in result.stdout
+
+- name: Activate plugins
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ app:enable -n {{ item }}"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  with_items: "{{ nextcloud_plugins }}"
+  changed_when: false

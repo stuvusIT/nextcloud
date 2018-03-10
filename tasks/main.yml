@@ -1,0 +1,49 @@
+---
+- name: Update cache
+  apt:
+    update_cache: yes
+  when: ansible_pkg_mgr == "apt"
+  changed_when: false
+
+- name: Install packages
+  apt:
+    name: "{{ item }}"
+  when: ansible_pkg_mgr == "apt"
+  with_items:
+    - php-gd
+    - php-zip
+    - php-curl
+    - php-mbstring
+    - php-ldap
+    - python-mysqldb
+    - php-mysql
+    - php-xml
+    - python-yaml
+    - php-redis
+
+- name: Check if Nextcloud folder exists
+  stat: 
+    path: "{{ nextcloud_path }}"
+  register: result
+
+- import_tasks: install.yml
+  when:  not result.stat.exists
+
+- import_tasks: ldap.yml
+  when: nextcloud_ldap_enable
+
+- import_tasks: plugins.yml
+
+- import_tasks: configure.yml
+
+- name: Get version number
+  shell: 'php occ -V'
+  become_user: "{{ nextcloud_system_user }}"
+  register: result
+  args:
+    chdir: "{{ nextcloud_path }}"
+  changed_when: false
+
+- name: Update Nextcloud
+  import_tasks: update.yml
+  when: nextcloud_version | version_compare(result.stdout.split(' ')[1], '>')

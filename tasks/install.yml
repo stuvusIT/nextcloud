@@ -1,0 +1,22 @@
+---
+- include_tasks: download.yml
+  vars:
+    nextcloud_download_version: "{{ nextcloud_version }}"
+    nextcloud_extract_path: "{{ nextcloud_path }}"
+
+- name: Create a new database with name '{{ nextcloud_mysql_database_name }}'
+  mysql_db:
+    name: "{{ nextcloud_mysql_database_name }}"
+
+- name: Create mariadb user
+  mysql_user:
+    name: "{{ nextcloud_mysql_user }}"
+    password: "{{ nextcloud_mysql_password }}"
+    priv: '{{ nextcloud_mysql_database_name }}.*:ALL,GRANT'
+
+- name: Run the nextcloud installer from command line
+  become_user: "{{ nextcloud_system_user }}"
+  shell: 'php occ  maintenance:install --database "mysql" --database-name "{{nextcloud_mysql_database_name}}"  --database-user "{{nextcloud_mysql_user}}" --database-pass "{{nextcloud_mysql_password}}" --admin-user "{{ nextcloud_user }}" --admin-pass "{{ nextcloud_password }}" --data-dir "{{ nextcloud_datadir_path }}"'
+  args:
+    chdir: "{{ nextcloud_path }}/"
+
