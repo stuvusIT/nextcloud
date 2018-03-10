@@ -1,8 +1,12 @@
 ---
-- name: Update cache and install packages
+- name: Update cache
   apt:
-    name: "{{item}}"
     update_cache: yes
+  when: ansible_pkg_mgr == "apt"
+
+- name: Install packages
+  apt:
+    name: "{{ item }}"
   when: ansible_pkg_mgr == "apt"
   with_items:
     - php-gd
@@ -32,7 +36,8 @@
 - import_tasks: configure.yml
 
 - name: Get version number
-  shell: 'sudo -u {{ nextcloud_system_user }} php occ -V'
+  shell: 'php occ -V'
+  become_user: "{{ nextcloud_system_user }}"
   register: result
   args:
     chdir: "{{ nextcloud_path }}"

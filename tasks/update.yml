@@ -1,6 +1,7 @@
 ---
 - name: Enable maintenance mode
-  shell: "sudo -u {{ nextcloud_system_user }} php occ maintenance:mode --on"
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ maintenance:mode --on"
   args:
     chdir: "{{ nextcloud_path }}"
 
@@ -34,7 +35,8 @@
   command: "mv {{ nextcloud_path_old }}_{{ nextcloud_version }}/apps {{ nextcloud_path }}/apps"
 
 - name: Run Nextcloud upgrade
-  shell: "sudo -u {{ nextcloud_system_user }} php occ upgrade"
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ upgrade"
   args:
     chdir: "{{ nextcloud_path }}"
 
@@ -48,6 +50,7 @@
     - mysql
 
 - name: Disable maintenance mode
-  shell: "sudo -u {{ nextcloud_system_user }} php occ maintenance:mode --off"
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ maintenance:mode --off"
   args:
     chdir: "{{ nextcloud_path }}"

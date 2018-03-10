@@ -1,12 +1,14 @@
 ---
 - name: Enable the LDAP plugin from command line using sudo
-  shell: "sudo -u {{ nextcloud_system_user }} php occ app:enable user_ldap"
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ app:enable user_ldap"
   args:
     chdir: "{{ nextcloud_path }}"
   changed_when: false
 
 - name: Get LDAP config id
-  shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:show-config | grep -w 'Configuration' | awk -F'|' '{print $3}'"
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ ldap:show-config | grep -w 'Configuration' | awk -F'|' '{print $3}'"
   args:
     chdir: "{{ nextcloud_path }}"
   register: config_id_exists_output
@@ -19,7 +21,8 @@
   changed_when: false
 
 - name: Create empty LDAP config
-  shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:create-empty-config -p"
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ ldap:create-empty-config -p"
   args:
     chdir: "{{ nextcloud_path }}"
   when: config_id_exists_output.stdout == ""
@@ -32,14 +35,16 @@
   changed_when: false
 
 - name: Set LDAP attributes
-  shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:set-config {{ config_id }} {{ item.key }} '{{ item.value }}'"
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ ldap:set-config {{ config_id }} {{ item.key }} '{{ item.value }}'"
   args:
     chdir: "{{ nextcloud_path }}"
   with_dict: "{{ nextcloud_ldap }}"
   changed_when: false
 
 - name: Test LDAP plugin config
-  shell: "sudo -u {{ nextcloud_system_user }} php occ ldap:test-config {{ config_id }}"
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ ldap:test-config {{ config_id }}"
   args:
     chdir: "{{ nextcloud_path }}"
   register: valid_config

@@ -15,7 +15,8 @@
     priv: '{{ nextcloud_mysql_database_name }}.*:ALL,GRANT'
 
 - name: Run the nextcloud installer from command line
-  shell: 'sudo -u {{ nextcloud_system_user }} php occ  maintenance:install --database "mysql" --database-name "{{nextcloud_mysql_database_name}}"  --database-user "{{nextcloud_mysql_user}}" --database-pass "{{nextcloud_mysql_password}}" --admin-user "{{ nextcloud_user }}" --admin-pass "{{ nextcloud_password }}" --data-dir "{{ nextcloud_datadir_path }}"'
+  become_user: "{{ nextcloud_system_user }}"
+  shell: 'php occ  maintenance:install --database "mysql" --database-name "{{nextcloud_mysql_database_name}}"  --database-user "{{nextcloud_mysql_user}}" --database-pass "{{nextcloud_mysql_password}}" --admin-user "{{ nextcloud_user }}" --admin-pass "{{ nextcloud_password }}" --data-dir "{{ nextcloud_datadir_path }}"'
   args:
     chdir: "{{ nextcloud_path }}/"
 
