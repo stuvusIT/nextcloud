@@ -53,3 +53,10 @@
 - fail:
     msg: "{{ valid_config.stdout }}"
   when: valid_config['stdout'] != "The configuration is valid and the connection could be established!"
+
+- name: Enable LDAP config
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ ldap:set-config {{ config_id }} ldapConfigurationActive '1'"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  changed_when: false

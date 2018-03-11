@@ -21,3 +21,29 @@
     path: "{{ tmp_file.path }}"
     state: absent
   changed_when: False
+
+- name: List all users so nextcloud actually creates them
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ user:list"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  when: nextcloud_ldap_enable
+
+- name: Create admin users
+  become_user: "{{ nextcloud_system_user }}"
+  shell: "php occ group:adduser admin {{ item.key }}"
+  args:
+    chdir: "{{ nextcloud_path }}"
+  register: result
+  failed_when: 'result.rc != 0 and not "user not found" in result.stdout'
+  changed_when: false
+  with_dict: "{{ nextcloud_admins }}"
+  when: nextcloud_ldap_enable
+
+- name: Add cron jobs
+  become_user: www-data
+  cron:
+    name: "Nextcloud"
+    minute: "*/15"
+    job: "php -f {{ nextcloud_path }}/cron.php"
+
