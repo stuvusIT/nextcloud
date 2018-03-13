@@ -10,6 +10,7 @@
     name: "{{ item }}"
   when: ansible_pkg_mgr == "apt"
   with_items:
+    - cron
     - php-gd
     - php-zip
     - php-curl
@@ -17,6 +18,7 @@
     - php-ldap
     - python-mysqldb
     - php-mysql
+    - php-apcu
     - php-xml
     - python-yaml
     - php-redis

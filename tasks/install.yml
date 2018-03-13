@@ -14,9 +14,16 @@
     password: "{{ nextcloud_mysql_password }}"
     priv: '{{ nextcloud_mysql_database_name }}.*:ALL,GRANT'
 
+- name: Create data dir path
+  file:
+    state: directory
+    path: "{{ nextcloud_data_dir_path }}"
+    owner: "{{ nextcloud_system_user }}"
+    group: "{{ nextcloud_system_group }}"
+
 - name: Run the nextcloud installer from command line
   become_user: "{{ nextcloud_system_user }}"
-  shell: 'php occ  maintenance:install --database "mysql" --database-name "{{nextcloud_mysql_database_name}}"  --database-user "{{nextcloud_mysql_user}}" --database-pass "{{nextcloud_mysql_password}}" --admin-user "{{ nextcloud_user }}" --admin-pass "{{ nextcloud_password }}" --data-dir "{{ nextcloud_datadir_path }}"'
+  shell: 'php occ  maintenance:install --database "mysql" --database-name "{{nextcloud_mysql_database_name}}" --database-user "{{nextcloud_mysql_user}}" --database-pass "{{nextcloud_mysql_password}}" --admin-user "{{ nextcloud_user }}" --admin-pass "{{ nextcloud_password }}" --data-dir "{{ nextcloud_data_dir_path }}"'
   args:
     chdir: "{{ nextcloud_path }}/"
 
