@@ -1,24 +1,22 @@
 ---
 - name: Install packages
   apt:
-    name: "{{ item }}"
-  when: ansible_pkg_mgr == "apt"
-  with_items:
-    - cron
-    - php-gd
-    - php-zip
-    - php-curl
-    - php-mbstring
-    - php-ldap
-    - python-mysqldb
-    - php-mysql
-    - php-apcu
-    - php-xml
-    - python-yaml
-    - php-redis
+    name:
+      - cron
+      - php-gd
+      - php-zip
+      - php-curl
+      - php-mbstring
+      - php-ldap
+      - python-mysqldb
+      - php-mysql
+      - php-apcu
+      - php-xml
+      - python-yaml
+      - php-redis
 
 - name: Check if Nextcloud folder exists
-  stat: 
+  stat:
     path: "{{ nextcloud_path }}"
   register: result
 
@@ -42,4 +40,4 @@
 
 - name: Update Nextcloud
   import_tasks: update.yml
-  when: nextcloud_version | version_compare(result.stdout.split(' ')[1], '>')
+  when: nextcloud_version is version_compare(result.stdout.split(' ')[1], '>')
