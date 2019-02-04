@@ -13,6 +13,7 @@
     name: "{{ nextcloud_mysql_user }}"
     password: "{{ nextcloud_mysql_password }}"
     priv: '{{ nextcloud_mysql_database_name }}.*:ALL,GRANT'
+  no_log: True
 
 - name: Create data dir path
   file:
