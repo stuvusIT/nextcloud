@@ -38,6 +38,6 @@
     chdir: "{{ nextcloud_path }}"
   changed_when: false
 
-- name: Update Nextcloud
+- name: "Update Nextcloud from {{ result.stdout.split }} to {{ nextcloud_version }}"
   import_tasks: update.yml
-  when: nextcloud_version is version_compare(result.stdout.split(' ')[1], '>')
+  when: nextcloud_version is version(result.stdout.split(' ')[3], '>')
