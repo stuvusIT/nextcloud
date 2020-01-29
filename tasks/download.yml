@@ -17,9 +17,9 @@
   command: "mv -f /tmp/nextcloud {{ nextcloud_extract_path }}"
 
 - name: Set permissions on root
-  file: 
+  file:
     path: "{{ nextcloud_extract_path }}"
-    state: directory 
+    state: directory
     mode: 0755
     owner: "{{ nextcloud_system_user }}"
     group: "{{ nextcloud_system_group }}"
