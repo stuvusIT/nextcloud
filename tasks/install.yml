@@ -5,7 +5,7 @@
     nextcloud_extract_path: "{{ nextcloud_path }}"
 
 - name: Create a new database with name '{{ nextcloud_mysql_database_name }}'
-  mysql_db:
+  community.mysql.mysql_db:
     name: "{{ nextcloud_mysql_database_name }}"
 
 - name: Create mariadb user
