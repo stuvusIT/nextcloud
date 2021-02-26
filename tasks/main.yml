@@ -11,11 +11,16 @@
       - python-mysqldb
       - python3-mysqldb
       - php-mysql
+      - php-pgsql
       - php-apcu
       - php-xml
       - python-yaml
       - python3-yaml
       - php-redis
+      - php-intl
+      - php-bcmath
+      - php-gmp
+      - php-imagick
 
 - name: Check if Nextcloud folder exists
   stat:
@@ -42,4 +47,4 @@
 
 - name: "Update Nextcloud from {{ result.stdout.split }} to {{ nextcloud_version }}"
   import_tasks: update.yml
-  when: nextcloud_version is version(result.stdout.split(' ')[3], '>')
+  when: nextcloud_version is version(result.stdout.split(' ')[-1], '>')

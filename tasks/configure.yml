@@ -44,5 +44,5 @@
   become_user: www-data
   cron:
     name: "Nextcloud"
-    minute: "*/15"
+    minute: "*/5"
     job: "php -f {{ nextcloud_path }}/cron.php 2>&1 | /usr/bin/logger -t cron-nextcloud"
