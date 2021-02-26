@@ -45,5 +45,4 @@
   cron:
     name: "Nextcloud"
     minute: "*/15"
-    job: "php -f {{ nextcloud_path }}/cron.php"
-
+    job: "php -f {{ nextcloud_path }}/cron.php 2>&1 | /usr/bin/logger -t cron-nextcloud"
