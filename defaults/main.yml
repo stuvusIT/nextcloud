@@ -9,3 +9,4 @@ nextcloud_mysql_database_name: nextcloud
 nextcloud_user: admin
 nextcloud_system_user: www-data
 nextcloud_system_group: www-data
+nextcloud_php_package_prefix: php
