@@ -27,6 +27,7 @@ A Debian-based system
 | `nextcloud_ldap_enable`         | `false`                   | Enable ldap                                                                                                                     |
 | `nextcloud_ldap`                | `false`                   | Dict containing the ldap attributes                                                                                             |
 | `nextcloud_admins`              | `false`                   | Dict containing the ldap usernames as key that should be added to the admin group                                               |
+| `nextcloud_php_package_prefix`  | `php`                     | The prefix used for the php packages, e.g. `php8.1` or `php7.2`.                                                                |
 
 ### LDAP Settings
 This is a list of the ldap attributes, for a description and behaviour please see the [Nextcloud documentation](https://docs.nextcloud.com/server/13/admin_manual/configuration_user/user_auth_ldap.html#configuration)

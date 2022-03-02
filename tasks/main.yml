@@ -3,24 +3,24 @@
   apt:
     name:
       - cron
-      - php-gd
-      - php-zip
-      - php-curl
-      - php-mbstring
-      - php-ldap
+      - "{{ nextcloud_php_package_prefix }}-gd"
+      - "{{ nextcloud_php_package_prefix }}-zip"
+      - "{{ nextcloud_php_package_prefix }}-curl"
+      - "{{ nextcloud_php_package_prefix }}-mbstring"
+      - "{{ nextcloud_php_package_prefix }}-ldap"
       - python-mysqldb
       - python3-mysqldb
-      - php-mysql
-      - php-pgsql
-      - php-apcu
-      - php-xml
+      - "{{ nextcloud_php_package_prefix }}-mysql"
+      - "{{ nextcloud_php_package_prefix }}-pgsql"
+      - "{{ nextcloud_php_package_prefix }}-apcu"
+      - "{{ nextcloud_php_package_prefix }}-xml"
       - python-yaml
       - python3-yaml
-      - php-redis
-      - php-intl
-      - php-bcmath
-      - php-gmp
-      - php-imagick
+      - "{{ nextcloud_php_package_prefix }}-redis"
+      - "{{ nextcloud_php_package_prefix }}-intl"
+      - "{{ nextcloud_php_package_prefix }}-bcmath"
+      - "{{ nextcloud_php_package_prefix }}-gmp"
+      - "{{ nextcloud_php_package_prefix }}-imagick"
 
 - name: Check if Nextcloud folder exists
   stat:
